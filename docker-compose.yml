@@ -1,0 +1,25 @@
+version: '3.9'
+
+services:
+  pgsql_db:
+    image: postgres:16
+    container_name: tasks_db
+    hostname: localhost
+    ports:
+      - "5433:5432"
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DATABASE=tasks
+    volumes:
+      - db_vol:/var/lib/postgresql/data
+  nginx:
+    image: nginx:latest
+    container_name: tasks_nginx
+    ports:
+      - "8080:80"
+    restart: always  
+
+volumes:
+  db_vol:
