@@ -47,6 +47,7 @@ tasks_db_controller = TasksDbController()
 histories_db_controller = HistoriesDbController()
 
 # UI
+st.set_page_config(page_title='View statictics')
 st.set_option('deprecation.showPyplotGlobalUse', False)
 st.markdown('## 統計情報')
 st.markdown('### タスク実行状況')

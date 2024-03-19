@@ -9,6 +9,7 @@ intervals_db_controller = IntervalsDbController()
 weekdays_db_controller = WeekdaysDbController()
 current_task_id = None
 
+st.set_page_config(page_title='Create task')
 st.markdown('## タスク作成')
 
 have_interval = st.checkbox('n日おきに行うタスクであればチェックを入れてください')

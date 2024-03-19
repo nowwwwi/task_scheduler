@@ -49,6 +49,7 @@ intervals_db_controller = IntervalsDbController()
 weekdays_db_controller = WeekdaysDbController()
 
 # UI
+st.set_page_config(page_title='Top page')
 st.markdown('# タスク通知アプリ')
 st.markdown('- タスク一覧')
 

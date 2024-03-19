@@ -4,6 +4,7 @@ from postgres import TasksDbController
 
 tasks_db_controller = TasksDbController()
 
+st.set_page_config(page_title='Update task')
 st.markdown('## タスク更新')
 st.markdown('- タスク一覧')
 
