@@ -1,4 +1,4 @@
-version: '3.9'
+version: '1'
 
 services:
   pgsql_db:
@@ -14,12 +14,18 @@ services:
       - POSTGRES_DATABASE=tasks
     volumes:
       - db_vol:/var/lib/postgresql/data
-  nginx:
-    image: nginx:latest
-    container_name: tasks_nginx
+  app:
+    build: .
+    container_name: tasks_app
+    working_dir: '/root/'
     ports:
-      - "8080:80"
-    restart: always  
-
+      - 8501:8501
+    restart: always
+  reverse_proxy:
+    image: nginx:latest
+    container_name:  tasks_front
+    ports:
+      - 8080:80
+      - 30443:443
 volumes:
   db_vol:
