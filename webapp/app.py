@@ -16,13 +16,13 @@ def create_msg(interval_df, weekday_df):
     try:
         for _, row in interval_df.iterrows():
             if row['interval'] == 1:
-                send_messages.append(f'実行タスク: {row['name']} 毎日行うタスクです')
+                send_messages.append(f'実行タスク: {row["name"]} 毎日行うタスクです')
             else:
                 pass
 
         for _, row in weekday_df.iterrows():
             if resources.weekday_dict[row['day_of_week']] == dt_now.weekday():
-                send_messages.append(f'実行タスク: {row['name']} 今日は{row['day_of_week']}曜日です')
+                send_messages.append(f'実行タスク: {row["name"]} 今日は{row["day_of_week"]}曜日です')
         success = True
     except:
         success = False

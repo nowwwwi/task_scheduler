@@ -58,21 +58,24 @@ merged_df = pd.merge(tasks, histories, on='task_id', how='inner')
 
 merged_df
 
-pie_1, pie_2 = st.columns(2)
+if merged_df.empty:
+    st.warning('タスク記録が入力されていません')
+else:
+    pie_1, pie_2 = st.columns(2)
 
-with pie_1:
-    st.markdown('- ユーザ別実行状況')
-    display_pie_each_user(merged_df)
+    with pie_1:
+        st.markdown('- ユーザ別実行状況')
+        display_pie_each_user(merged_df)
 
-with pie_2:
-    st.markdown('- 大分類別タスク実行状況')
-    display_pie_major_class(merged_df)
+    with pie_2:
+        st.markdown('- 大分類別タスク実行状況')
+        display_pie_major_class(merged_df)
 
-pie_3, pie_4 = st.columns(2)
+    pie_3, pie_4 = st.columns(2)
 
-with pie_3:
-    st.markdown('- 中分類別タスク実行状況')
-    display_pie_minor_class(merged_df)
+    with pie_3:
+        st.markdown('- 中分類別タスク実行状況')
+        display_pie_minor_class(merged_df)
 
-with pie_4:
-    st.markdown('- 実行時間別タスク実行状況')
+    with pie_4:
+        st.markdown('- 実行時間別タスク実行状況')
