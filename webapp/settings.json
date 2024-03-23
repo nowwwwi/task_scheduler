@@ -1,0 +1,28 @@
+{
+    "IsProduction": true,
+    "LineNotify": {
+        "Url": "https://notify-api.line.me/api/notify",
+        "Token": "QGLSfegDJD85gOhW7wjgEXDltnQ8ELo6VjYeW6mbNvt"
+    },
+    "ConnectionStrings": {
+        "Docker": {
+            "Host": "localhost",
+            "Port": "5433",
+            "DbName": "task_scheduler",
+            "User": "postgres",
+            "Password": "postgres"
+        },
+        "Heroku": {
+            "Host": "cbbirn8v9855bl.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com",
+            "Port": "5432",
+            "DbName": "d9vihtq5l6ce7g",
+            "User": "u1mhk6822l2iqa",
+            "Password": "pb5a9e44c4971310bdbeb8e59b3b963b5f027772b597eda6aac980d4fa597ecbb"
+        }
+    },
+    "SqlQueries": {
+        "Create": "",
+        "Read": "SELECT * FROM %s"
+    },
+    "HelpMessages": {}
+}

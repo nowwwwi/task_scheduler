@@ -2,37 +2,67 @@ import psycopg2
 import pandas as pd
 from src import resources
 from datetime import datetime
+import json
 
 COLUMNS = ['id', 'name', 'majorClass', 'minorClass', 'interval', 'weekDays', 'lastDate']
 CREATE = 'INSERT INTO tasks (name,majorClass,minorClass,interval,weekDay,latestDate) VALUES (%s, %s, %s, %s, %s, %s)'
 READ = "SELECT * FROM %s"
 UPDATE = 'UPDATE tasks SET latestDate = CURRENT_DATE WHERE id = %s'
 DELETE = 'DELETE FROM tasks WHERE id = %s'
+CONNECTIONSTRING = 'host=%s port=%s dbname=%s user=%s password=%s'
+
+class BaseDbController:
+    def __init__(self) -> None:
+        # Get settings from json file.
+        file = open('webapp/settings.json', 'r')
+        self.settings = json.load(file)
+
+        # Create db connection string.
+        if self.settings["IsProduction"]:
+            connections = self.settings["ConnectionStrings"]["Heroku"]
+        else:
+            connections = self.settings["ConnectionStrings"]["Docker"]
+        
+        self.connection_string = f'host={connections["Host"]} port={connections["Port"]} dbname={connections["DbName"]} user={connections["User"]} password={connections["Password"]}'
+    
+    def create(self, **kwargs):
+        pass
+
+    def read(self, **kwargs):
+        pass
+
+    def update(self, **kwargs):
+        pass
+
+    def delete(self, **kwargs):
+        pass
 
 
-class TasksDbController:
+class TasksDbController(BaseDbController):
     def __init__(self):
+        super().__init__()
         self.db_name = 'tasks'
         self.columns = ['task_id', 'name', 'majorClass', 'minorClass', 'have_interval', 'created_at', 'updated_at']
-        
     
     def create(self, name, majorClass, minorClass, have_interval):
-            try:
-                self.connection = psycopg2.connect(resources.POSTGRES_CONNECTIONSTRING)
-                self.cursor = self.connection.cursor()
-                self.cursor.execute(
-                    'INSERT INTO tasks (name,majorClass,minorClass,have_interval,created_at) VALUES (%s, %s, %s, %s, %s) RETURNING task_id',
-                    (name, majorClass, minorClass, have_interval, datetime.now()))
-                task_id = self.cursor.fetchone()[0]
-                self.connection.commit()
-                return task_id
-            finally:
-                self.cursor.close()
-                self.connection.close()
+        super.create()
+        try:
+            self.connection = psycopg2.connect(self.connection_string)
+            self.cursor = self.connection.cursor()
+            self.cursor.execute(
+                'INSERT INTO tasks (name,majorClass,minorClass,have_interval,created_at) VALUES (%s, %s, %s, %s, %s) RETURNING task_id',
+                (name, majorClass, minorClass, have_interval, datetime.now()))
+            task_id = self.cursor.fetchone()[0]
+            self.connection.commit()
+            return task_id
+        finally:
+            self.cursor.close()
+            self.connection.close()
 
     def read(self):
+        super().read()
         try:
-            self.connection = psycopg2.connect(resources.POSTGRES_CONNECTIONSTRING)
+            self.connection = psycopg2.connect(self.connection_string)
             self.cursor = self.connection.cursor()
             self.cursor.execute(f"SELECT * FROM {self.db_name}")
             rows = self.cursor.fetchall()
@@ -55,39 +85,27 @@ class TasksDbController:
             self.connection.close()
     
     def update(self, id):
+        super().update()
         self.cursor.execute(UPDATE, f'{id}')
         self.connection.commit()
         self.connection.close()
 
     def delete(self, id):
+        super().delete()
         self.cursor.execute(DELETE, f'{id}')
         self.connection.commit()
         self.connection.close()
-    
-    
 
-class IntervalsDbController:
-    """ sql script
-        CREATE TABLE intervals (
-            interval_id SERIAL NOT NULL,
-            task_id SERIAL,
-            interval INT NOT NULL,
-            PRIMARY KEY (interval_id),
-            FOREIGN KEY (task_id) REFERENCES tasks (task_id)
-        );
-    """
+class IntervalsDbController(BaseDbController):
     def __init__(self):
+        super().__init__()
         self.db_name = 'intervals'
-        self.columns = [
-            'interval_id',
-            'task_id',
-            'interval',
-        ]
-        
+        self.columns = ['interval_id', 'task_id', 'interval']
     
     def create(self, task_id, interval):
+        super().create()
         try:
-            self.connection = psycopg2.connect(resources.POSTGRES_CONNECTIONSTRING)
+            self.connection = psycopg2.connect(self.connection_string)
             self.cursor = self.connection.cursor()
             self.cursor.execute(
             'INSERT INTO intervals (task_id, interval) VALUES (%s, %s)',
@@ -99,8 +117,9 @@ class IntervalsDbController:
             self.connection.close()
     
     def read(self):
+        super().create()
         try:
-            self.connection = psycopg2.connect(resources.POSTGRES_CONNECTIONSTRING)
+            self.connection = psycopg2.connect(self.connection_string)
             self.cursor = self.connection.cursor()
             self.cursor.execute(f"SELECT * FROM {self.db_name}")
             rows = self.cursor.fetchall()
@@ -110,19 +129,16 @@ class IntervalsDbController:
             self.cursor.close()
             self.connection.close()
 
-
-class WeekdaysDbController:
+class WeekdaysDbController(BaseDbController):
     def __init__(self):
+        super().__init__()
         self.db_name = 'weekdays'
-        self.columns = [
-            'weekday_id',
-            'task_id',
-            'day_of_week',
-        ]
+        self.columns = ['weekday_id', 'task_id', 'day_of_week']
     
     def create(self, task_id, day):
+        super().create()
         try:
-            self.connection = psycopg2.connect(resources.POSTGRES_CONNECTIONSTRING)
+            self.connection = psycopg2.connect(self.connection_string)
             self.cursor = self.connection.cursor()
             self.cursor.execute(
                 'INSERT INTO weekdays (task_id, day_of_week) VALUES (%s, %s)',
@@ -134,6 +150,7 @@ class WeekdaysDbController:
             self.connection.close()
     
     def read(self):
+        super().read()
         try:
             self.connection = psycopg2.connect(resources.POSTGRES_CONNECTIONSTRING)
             self.cursor = self.connection.cursor()
@@ -145,26 +162,29 @@ class WeekdaysDbController:
             self.cursor.close()
             self.connection.close()
 
-class HistoriesDbController:
+class HistoriesDbController(BaseDbController):
     def __init__(self):
+        super().__init__()
         self.db_name = 'histories'
         self.columns = ['history_id', 'task_id', 'executed_by', 'executed_at']
     
     def create(self, task_id, updated_by):
-            try:
-                self.connection = psycopg2.connect(resources.POSTGRES_CONNECTIONSTRING)
-                self.cursor = self.connection.cursor()
-                self.cursor.execute(
+        super().create()
+        try:
+            self.connection = psycopg2.connect(self.connection_string)
+            self.cursor = self.connection.cursor()
+            self.cursor.execute(
                     'INSERT INTO histories (task_id,updated_by,updated_at) VALUES (%s, %s, %s)',
                     (task_id, updated_by, datetime.now()))
-                self.connection.commit()
-            finally:
-                self.cursor.close()
-                self.connection.close()
+            self.connection.commit()
+        finally:
+            self.cursor.close()
+            self.connection.close()
     
     def read(self):
+        super().read()
         try:
-            self.connection = psycopg2.connect(resources.POSTGRES_CONNECTIONSTRING)
+            self.connection = psycopg2.connect(self.connection_string)
             self.cursor = self.connection.cursor()
             self.cursor.execute(f"SELECT * FROM {self.db_name}")
             rows = self.cursor.fetchall()
