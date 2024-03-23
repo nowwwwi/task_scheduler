@@ -6,6 +6,7 @@ import requests
 
 from src import resources
 from postgres import TasksDbController, IntervalsDbController, WeekdaysDbController
+from _pages import record
 
 
 def create_msg(interval_df, weekday_df):
@@ -84,3 +85,5 @@ if st.button('今日のタスクを取得します'):
             st.warning('本日のタスクの取得に失敗しました')
     except Exception as e:
         st.error(f'エラーが発生しました: {e}')
+
+record.record()

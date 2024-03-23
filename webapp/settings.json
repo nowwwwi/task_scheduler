@@ -1,5 +1,5 @@
 {
-    "IsProduction": true,
+    "IsProduction": false,
     "LineNotify": {
         "Url": "https://notify-api.line.me/api/notify",
         "Token": "QGLSfegDJD85gOhW7wjgEXDltnQ8ELo6VjYeW6mbNvt"
@@ -20,9 +20,15 @@
             "Password": "pb5a9e44c4971310bdbeb8e59b3b963b5f027772b597eda6aac980d4fa597ecbb"
         }
     },
-    "SqlQueries": {
-        "Create": "",
-        "Read": "SELECT * FROM %s"
+    "HelpMessages": {},
+    "WeekDay": {
+        "月": 0,
+        "火": 1,
+        "水": 2,
+        "木": 3,
+        "金": 4,
+        "土": 5,
+        "日": 6
     },
-    "HelpMessages": {}
+    "Players": ["Mari", "Kohei"]
 }
