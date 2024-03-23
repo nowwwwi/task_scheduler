@@ -7,6 +7,7 @@ tasks_db_controller = TasksDbController()
 histories_db_controller = HistoriesDbController()
 
 # UI
+st.set_page_config(page_title='Record history')
 st.markdown('## タスク記録')
 tasks = tasks_db_controller.read()
 
@@ -16,8 +17,13 @@ merged = pd.merge(tasks, histories, on='task_id', how='inner')
 st.write(merged.head(5))
 
 st.markdown('### 記録するタスクを選択してください')
-task_id = st.selectbox('タスクを選択', tasks['task_id'])
-selected_task = tasks_db_controller.get_entity(task_id)
+
+df2dict = {}
+for id, name in zip(tasks['task_id'], tasks['name']):
+    df2dict[f'{id}:{name}'] = id
+
+task_key = st.selectbox('タスクを選択', df2dict.keys())
+selected_task = tasks_db_controller.get_entity(df2dict[task_key])
 
 with st.form('create_record', clear_on_submit=False):
     st.markdown(f'- {selected_task[1]} の実行結果を記録します')

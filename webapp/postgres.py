@@ -63,6 +63,8 @@ class TasksDbController:
         self.cursor.execute(DELETE, f'{id}')
         self.connection.commit()
         self.connection.close()
+    
+    
 
 class IntervalsDbController:
     """ sql script
